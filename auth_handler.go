@@ -6,17 +6,20 @@ import (
 	"net/http"
 )
 
-// AuthRequest struct with tag for serializing and deserializing from json to Go and viceversa
 type AuthRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
-// Handler for authentication request
+// AuthHandler is an HTTP handler function that processes authentication requests.
+// Based on the provided credentials (JSON payload), it returns appropriate HTTP responses.
+//
+// Parameters:
+//   - w (http.ResponseWriter): The interface used to send HTTP responses to the client
+//   - r (*http.Request): The struct containing the HTTP request from the client.
 func AuthHandler(w http.ResponseWriter, r *http.Request) {
 	var authRequest AuthRequest
 
-	// Decode JSON data from http request
 	if err := json.NewDecoder(r.Body).Decode(&authRequest); err != nil {
 		http.Error(w, "Invalid JSON format", http.StatusBadRequest)
 		return
