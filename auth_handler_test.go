@@ -25,16 +25,17 @@ func FuzzAuthHandler(f *testing.F) {
 
 	// Fixed test cases (including empty fields and SQL Injection attempt)
 	testCases := []AuthRequest{
+		{"user1", ""},
+		{"user1", "psw"},
 		{"user1", "password1"},
-		{"", "password123"},
-		{"user", ""},
+		{"me", "password12345"},
 		{"user!@#", "passw0rd!"},
-		{"admin' --", "password123"},
 		{"' OR '1'='1", "password123"},
 		{"admin", "' OR '1'='1' --"},
 		{"admin' OR '1'='1' --", "admin' OR '1'='1' --"},
 		{"admin' UNION SELECT NULL, NULL --", "password123"},
 		{"admin' AND 1=1 --", "password123"},
+		{"user2", "bozTS5tLf6mfVLFxn7SFxJxdfEBb9sX"},
 	}
 
 	// Add test cases to the fuzzer
@@ -46,7 +47,7 @@ func FuzzAuthHandler(f *testing.F) {
 	// Fuzzing execution
 	f.Fuzz(func(t *testing.T, data []byte) {
 
-		t.Logf("%s", data)
+		t.Logf("Generated input: %s", data)
 
 		if !json.Valid(data) {
 			t.Skip("Invalid json format")
